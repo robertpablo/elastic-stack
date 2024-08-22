@@ -1,0 +1,26 @@
+outputs:
+  default:
+    type: remote_elasticsearch
+    hosts: 
+      - '${ELASTICSEARCH_HOST}'
+    service_token: '${FLEET_SERVER_SERVICE_TOKEN}'
+    ssl:
+      certificate_authorities:
+        - /certs/live/namedns.pe/chain.pem
+
+agent:
+  monitoring:
+    enabled: true
+    logs: true
+    metrics: true
+  logging:
+    level: debug
+    selectors: '*'
+
+fleet:
+  enabled: true
+  server:
+    url: '${FLEET_URL}'  # URL del servidor Fleet
+    service_token: '${FLEET_SERVER_SERVICE_TOKEN}'
+    certificate: /certs/live/namedns.pe/fullchain.pem
+    certificate_key: /certs/live/namedns.pe/privkey.pem

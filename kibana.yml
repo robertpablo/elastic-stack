@@ -1,0 +1,70 @@
+elastic:
+  apm:
+    active: true
+    serverUrl: "${APM_URL}"
+    secretToken: "${ELASTIC_APM_SECRET_TOKEN}"
+    ssl:
+      certificateAuthorities: /usr/share/kibana/config/certs/live/namedns.pe/chain.pem
+
+xpack.encryptedSavedObjects.encryptionKey: "thirty-two-or-more-random-characters"
+
+server.host: "0.0.0.0"
+server.publicBaseUrl: "${KIBANA_HOST}"
+server.ssl.enabled: true
+server.ssl.certificate: /usr/share/kibana/config/certs/live/namedns.pe/fullchain.pem
+server.ssl.key: /usr/share/kibana/config/certs/live/namedns.pe/privkey.pem
+server.ssl.certificateAuthorities: /usr/share/kibana/config/certs/live/namedns.pe/chain.pem
+
+elasticsearch.hosts: ["${ELASTICSEARCH_HOSTS}"]
+elasticsearch.username: "kibana_system"
+elasticsearch.password: "${ELASTICSEARCH_PASSWORD}"
+
+telemetry.enabled: true
+migrations.maxBatchSizeBytes: 200mb
+
+xpack.fleet.packages:
+  - name: fleet_server
+    version: latest
+  - name: system
+    version: latest
+  - name: elastic_agent
+    version: latest
+  - name: apm
+    version: latest    
+
+xpack.fleet.agentPolicies:
+  - name: Fleet-Server-Policy
+    id: fleet-server-policy
+    namespace: default
+    package_policies:
+      - name: fleet_server-1
+        package:
+          name: fleet_server
+      - name: system-1
+        package:
+          name: system
+      - name: elastic_agent-1
+        package:
+          name: elastic_agent
+      - name: apm-1
+        package:
+          name: apm
+        inputs:
+        - type: apm
+          enabled: true
+          vars:
+          - name: host
+            value: "${APM_URL}"
+          - name: secret_token
+            value: "${ELASTIC_APM_SECRET_TOKEN}"
+
+logging:
+  appenders:
+    console:
+      type: console
+      layout:
+        type: pattern
+        highlight: true
+  root:
+    level: debug
+    appenders: [console]
